@@ -9,6 +9,16 @@ console.log('Sample JavaScript #3 HW #15');
  * если нет – то счет продолжается
  */
 
+let counter = (function () {
+  let count = 0;
+
+  return function (num) {
+    count = num !== undefined ? num : count;
+
+    return count++;
+  };
+}());
+
 // console.log(counter()); // 0
 
 // console.log(counter()); // 1
@@ -35,6 +45,24 @@ console.log('Sample JavaScript #3 HW #15');
  * counting.increment() – увеличивает значение счетчика на 1
  * counting.decrement() – уменьшает значение счетчика на 1
  */
+
+let counting = (function () {
+  let count = 0;
+
+  return {
+    value(num) {
+      count = num !== undefined ? num : count;
+
+      return count;
+    },
+    increment() {
+      count++;
+    },
+    decrement() {
+      count--;
+    }
+  };
+}());
 
 // console.log(counting.value()); // 0
 
@@ -67,16 +95,37 @@ console.log('Sample JavaScript #3 HW #15');
 /*
  * #3
  *
- * Создайте функцию myPow(a, b, myPrint). Внутри реализуйте рекурсию для подсчета результата возведения числа a в степень b.
- * функция myPrint(a, b, res) – глобальная функция, которая должна генерировать из параметров a, b, res строку вида 'a^b=res' и возвращать ее
- * myPrint() должна быть передана в myPow() как параметр и вызвана внутри как callback-функция
+ * Создайте функцию myPow(a, b, myPrint). Внутри реализуйте рекурсию для подсчета
+ * результата возведения числа a в степень b.
+ * функция myPrint(a, b, res) – глобальная функция, которая должна генерировать из
+ * параметров a, b, res строку вида 'a^b=res' и возвращать ее
+ * myPrint() должна быть передана в myPow() как параметр и вызвана внутри как
+ * callback-функция
  * функция myPow() в качестве возвращаемого значения принимает результат myPrint()
  * Например:
  * console.log(myPow(3, 4, myPrint)); // 3^4=81
  * console.log(myPow(2, 3, myPrint)); // 2^3=8
  */
 
-//  console.log(myPow(3, 4, myPrint)); // 3^4=81
+let myPrint = function (a, b, res) {
+  return `${a}^${b}=${res}`;
+};
+
+let myPow = function (a, b, callback) {
+  let myPowIf = function (x, n) {
+    if (n !== 1) {
+      let x1 = x;
+
+      return x1 *= myPowIf(x, n - 1);
+    }
+
+    return x;
+  };
+
+  return callback(a, b, myPowIf(a, b));
+};
+
+// console.log(myPow(3, 4, myPrint)); // 3^4=81
 
 // console.log(myPow(2, 3, myPrint)); // 2^3=8
 
@@ -110,23 +159,43 @@ console.log('Sample JavaScript #3 HW #15');
  * - если сеттеру used присвоено значение 'used', ничего делать не нужно
  */
 
-// let yearNow = new Date().getFullYear(); // получить текущий год как число
+let yearNow = new Date().getFullYear();
 
-// console.log(car.info()); // Chevrolet Lacetti, 2000cc, year 2010, used
+let car = {
+  engine: 2000,
+  model: 'Lacetti',
+  name: 'Chevrolet',
+  year: 2010,
+  get used() {
+    return this.year === yearNow ? 'new' : 'used';
+  },
+  set used(value) {
+    if (value === 'new' && this.year !== yearNow) {
+      this.year = yearNow;
+    }
+  },
+  info() {
+    return `${this.name} ${this.model}, ${this.engine}cc, year ${this.year}, ${this.used}`;
+  }
+};
 
-// car.used = 'new';
-
-// console.log(car.info()); // Chevrolet Lacetti, 2000cc, year 2019, new -- год изменен
-
-// car.used = 'used';
-
-// console.log(car.info()); // Chevrolet Lacetti, 2000cc, year 2019, new -- изменения не выполняются
-
-// console.log(car2.info()); // Infinite FX50 AWD, 5000cc, year 2019, new
-
-// car.used = 'used';
-
-// console.log(car2.info()); // Infinite FX50 AWD, 5000cc, year 2019, new -- изменения не выполняются
+let car2 = {
+  engine: 5000,
+  model: 'FX50 AWD',
+  name: 'Infinite',
+  year: 2023,
+  get used() {
+    return this.year === yearNow ? 'new' : 'used';
+  },
+  set used(value) {
+    if (value === 'new' && this.year !== yearNow) {
+      this.year = yearNow;
+    }
+  },
+  info() {
+    return `${this.name} ${this.model}, ${this.engine}cc, year ${this.year}, ${this.used}`;
+  }
+};
 
 /*
  * #7
@@ -135,7 +204,11 @@ console.log('Sample JavaScript #3 HW #15');
  * В реализации функции должен быть применен метод Math.max() и apply().
  */
 
-// let list = [12, 23, 100, 34, 56, 9, 233];
+let list = [12, 23, 100, 34, 56, 9, 233];
+
+function myMax(arr) {
+  return Math.max.apply(null, arr);
+}
 
 // console.log(myMax(list)); // 233
 
@@ -145,25 +218,42 @@ console.log('Sample JavaScript #3 HW #15');
  * Создайте функцию myMul(a, b), которая будет умножать числа а и b, возвращая результат.
  */
 
+function myMul(a, b) {
+  return a * b;
+}
+
 /*
  * создайте функции myDouble(n), которая принимает один параметр и  удваивает его.
  * Использовать умножение или другие математические операции внутри функции – запрещено, только bind() и myMul().
  * Функция возвращает результат вычисления.
  */
+let myDouble = myMul.bind(null, 2);
 
-// console.log(myDouble(3)); // = myMul(2, 3) = 6
+// function myDouble(n) {
+//   let double = myMul.bind(undefined, n);
 
-// console.log(myDouble(4)); // = myMul(2, 4) = 8
+//   return double(2);
+// }
+console.log(myDouble(3)); // = myMul(2, 3) = 6
 
-// console.log(myDouble(5)); // = myMul(2, 5) = 10
+console.log(myDouble(4)); // = myMul(2, 4) = 8
+
+console.log(myDouble(5)); // = myMul(2, 5) = 10
 
 // аналогичным образом создайте функцию myTriple(n), которая утраивает принимающий параметр, возвращая результат.
+let myTriple = myMul.bind(null, 3);
 
-// console.log(myTriple(3)); // = myMul(3, 3) = 9
+// function myTriple(n) {
+//   let triple = myMul.bind(undefined, n);
 
-// console.log(myTriple(4)); // = myMul(3, 4) = 12
+//   return triple(3);
+// }
 
-// console.log(myTriple(5)); // = myMul(3, 5) = 15
+console.log(myTriple(3)); // = myMul(3, 3) = 9
+
+console.log(myTriple(4)); // = myMul(3, 4) = 12
+
+console.log(myTriple(5)); // = myMul(3, 5) = 15
 
 /*
  * #9
@@ -175,10 +265,14 @@ console.log('Sample JavaScript #3 HW #15');
  * Любые условные операторы – запрещены и объекты.
  */
 
-// let notUniqNums = [1, 1, 2, 3, 4, 5, 6, 7];
+let notUniqNums = [1, 1, 2, 3, 4, 5, 6, 7];
 
-// let notUniqStrings = ['Bob', 'Kate', 'Jhon', 'Tom', 'Jhon', 'Kate', 'Tom', 'Bob', 'Jhon', 'Tom'];
+let notUniqStrings = ['Bob', 'Kate', 'Jhon', 'Tom', 'Jhon', 'Kate', 'Tom', 'Bob', 'Jhon', 'Tom'];
 
-// console.log(myUniq(notUniqNums));
+function myUniq(arr) {
+  return [...new Set(arr)];
+}
 
-// console.log(myUniq(notUniqStrings));
+console.log(myUniq(notUniqNums));
+
+console.log(myUniq(notUniqStrings));
